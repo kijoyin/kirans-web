@@ -1,0 +1,16 @@
+# Node (migration tooling)
+node_modules/
+tools/node_modules/
+
+# BlazorStatic generated output (built by CI)
+output/
+KiranJoy.Web/output/
+
+# .NET build artifacts
+bin/
+obj/
+
+# OS / editor
+.DS_Store
+.vs/
+.idea/
