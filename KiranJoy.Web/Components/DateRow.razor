@@ -1,0 +1,14 @@
+@using System.Globalization
+<span class="post-date">
+    <time datetime="@Published.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">
+        @Published.ToString("MMMM d, yyyy", CultureInfo.InvariantCulture)
+    </time>
+    @if (Updated.HasValue)
+    {
+        <span> · updated @Updated.Value.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)</span>
+    }
+</span>
+@code {
+    [Parameter, EditorRequired] public DateTime Published { get; set; }
+    [Parameter] public DateTime? Updated { get; set; }
+}

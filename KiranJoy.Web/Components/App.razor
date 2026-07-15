@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <base href="/"/>
+    <meta name="description" content="@WebsiteKeys.Name — Integration Architect & Engineering Manager specialising in .NET, Azure and applied AI."/>
+    <meta name="author" content="@WebsiteKeys.Name"/>
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="@WebsiteKeys.Name"/>
+    <meta property="og:site_name" content="@WebsiteKeys.Name"/>
+    <meta property="og:url" content="@WebsiteKeys.SiteUrl"/>
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="stylesheet" href="/css/site.css"/>
+
+    <!-- Set theme before paint to avoid a flash of the wrong theme -->
+    <script>
+        (function () {
+            try {
+                var stored = localStorage.getItem('theme');
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var theme = stored || (prefersDark ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) { }
+        })();
+    </script>
+
+    <HeadOutlet/>
+</head>
+
+<body>
+<Routes/>
+</body>
+
+</html>

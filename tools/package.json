@@ -1,0 +1,13 @@
+{
+  "name": "kiranjoy-tools",
+  "private": true,
+  "type": "module",
+  "description": "One-off tooling: WordPress -> Markdown migration for the BlazorStatic site.",
+  "scripts": {
+    "migrate": "node migrate-wordpress.mjs"
+  },
+  "dependencies": {
+    "turndown": "^7.2.0",
+    "turndown-plugin-gfm": "^1.0.2"
+  }
+}

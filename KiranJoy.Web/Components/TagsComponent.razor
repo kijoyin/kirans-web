@@ -1,0 +1,14 @@
+@using BlazorStatic
+@using BlazorStatic.Services
+@inject BlazorStaticContentService<BlogFrontMatter> blazorStaticContentService
+
+<div class="tag-row @ClassPlus">
+    @foreach (var tag in Tags)
+    {
+        <a class="tag" href="@blazorStaticContentService.Options.Tags.TagsPageUrl/@tag">#@tag</a>
+    }
+</div>
+@code {
+    [Parameter] public List<string> Tags { get; set; } = [];
+    [Parameter] public string ClassPlus { get; set; } = "";
+}

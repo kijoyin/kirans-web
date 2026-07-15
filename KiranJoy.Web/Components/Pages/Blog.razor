@@ -1,0 +1,70 @@
+@page "/blog"
+@page "/blog/{fileName}"
+@using System.Globalization
+@using BlazorStatic
+@using BlazorStatic.Services
+@inject BlazorStaticContentService<BlogFrontMatter> blazorStaticContentService
+
+
+@* No filename -> show blog index with search *@
+@if (string.IsNullOrWhiteSpace(FileName))
+{
+    <section class="section">
+        <H1>Blog</H1>
+        <p class="lead-block">@WebsiteKeys.BlogLead</p>
+
+        <div class="search-wrap">
+            <link href="/pagefind/pagefind-ui.css" rel="stylesheet">
+            <script src="/pagefind/pagefind-ui.js"></script>
+            <div id="search"></div>
+            <script>
+                window.addEventListener('DOMContentLoaded', function () {
+                    if (window.PagefindUI) {
+                        new PagefindUI({ element: "#search", showSubResults: true, showImages: false });
+                    }
+                });
+            </script>
+        </div>
+
+        <PostsList />
+    </section>
+    return;
+}
+
+@* Show specific post by filename param *@
+@if (post == null)
+{
+    <p>Post not found 🤷</p>
+    return;
+}
+<article data-pagefind-body>
+    <header class="article-header">
+        <DateRow Published="post.FrontMatter.Published" Updated="post.FrontMatter.Updated" />
+        <H1>@post.FrontMatter.Title</H1>
+        <TagsComponent Tags="post.FrontMatter.Tags" ClassPlus="" />
+    </header>
+
+    <div class="prose">
+        @((MarkupString)post.HtmlContent)
+    </div>
+
+    <div class="text-muted" style="margin-top:2rem; font-size:0.9rem;">
+        <a target="_blank" rel="noopener noreferrer"
+           href="@($"{WebsiteKeys.BlogPostStorageAddress}/{FileName}.md")">View source on GitHub</a>
+    </div>
+
+    <a class="back-link" href="/blog">← Back to all posts</a>
+</article>
+
+
+@code {
+    [Parameter] public string? FileName { get; set; }
+    Post<BlogFrontMatter>? post;
+
+    protected override void OnInitialized()
+    {
+        if (string.IsNullOrWhiteSpace(FileName)) return;
+        post = blazorStaticContentService.Posts.FirstOrDefault(x => x.Url == FileName);
+    }
+
+}

@@ -1,0 +1,110 @@
+@page "/"
+@using BlazorStatic
+@using BlazorStatic.Services
+@inject BlazorStaticContentService<BlogFrontMatter> blazorStaticContentService
+
+@* =========================================================================
+   HOME / RESUME
+   Edit the copy below to match your story. Placeholders marked TODO.
+   ========================================================================= *@
+
+<section class="hero">
+    <h1>@WebsiteKeys.Name</h1>
+    <p class="lead">Integration Architect &amp; Engineering Manager — building resilient .NET &amp; Azure systems, and leading teams into applied AI.</p>
+    <p class="intro">
+        I help organisations connect complex systems and ship dependable software at scale.
+        My focus is enterprise integration, cloud-native .NET on Azure and Kubernetes, and
+        pragmatic adoption of AI. I care about developer experience, clean architecture, and
+        mentoring engineers to do their best work.
+    </p>
+    <div class="cta-row">
+        <a class="btn btn-primary" href="/blog">Read the blog</a>
+        <a class="btn btn-ghost" href="@WebsiteKeys.LinkedIn" target="_blank" rel="noopener noreferrer">Connect on LinkedIn</a>
+        <a class="btn btn-ghost" href="mailto:@WebsiteKeys.Email">Get in touch</a>
+    </div>
+</section>
+
+<section class="section">
+    <h2 class="section-title">What I do</h2>
+    <ul class="pill-list">
+        <li class="pill">Enterprise Integration</li>
+        <li class="pill">.NET / C#</li>
+        <li class="pill">Azure</li>
+        <li class="pill">Microservices &amp; APIs</li>
+        <li class="pill">Kubernetes</li>
+        <li class="pill">Event-driven Architecture</li>
+        <li class="pill">Blazor</li>
+        <li class="pill">DevOps &amp; CI/CD</li>
+        <li class="pill">Applied AI / LLMs</li>
+        <li class="pill">Engineering Leadership</li>
+    </ul>
+</section>
+
+<section class="section">
+    <h2 class="section-title">Experience</h2>
+    @* TODO: replace roles, organisations and dates with your real history. *@
+    <ol class="timeline">
+        <li class="timeline-item">
+            <div class="period">20XX — Present</div>
+            <div>
+                <h3>Engineering Manager / Integration Architect</h3>
+                <div class="org">Company Name</div>
+                <p>Lead integration strategy and delivery across cloud platforms. Grow and mentor
+                   engineering teams, set technical direction, and champion reliable, observable systems.</p>
+            </div>
+        </li>
+        <li class="timeline-item">
+            <div class="period">20XX — 20XX</div>
+            <div>
+                <h3>Senior Software Engineer</h3>
+                <div class="org">Company Name</div>
+                <p>Designed and built .NET services and integrations on Azure. Introduced CI/CD,
+                   infrastructure-as-code and containerised workloads on Kubernetes.</p>
+            </div>
+        </li>
+        <li class="timeline-item">
+            <div class="period">20XX — 20XX</div>
+            <div>
+                <h3>Software Engineer</h3>
+                <div class="org">Company Name</div>
+                <p>Delivered line-of-business applications and data pipelines, with a focus on
+                   automation and developer productivity.</p>
+            </div>
+        </li>
+    </ol>
+</section>
+
+<section class="section">
+    <h2 class="section-title">Speaking &amp; Community</h2>
+    <ul class="timeline">
+        <li class="timeline-item">
+            <div class="period">2023</div>
+            <div>
+                <h3>Home Labs — Why every developer should build one</h3>
+                <div class="org">DDD Brisbane</div>
+                <p>A talk on using a home lab to accelerate learning for developers and DevOps engineers.</p>
+            </div>
+        </li>
+    </ul>
+</section>
+
+@if (blazorStaticContentService.Posts.Any())
+{
+    <section class="section">
+        <h2 class="section-title">Latest writing</h2>
+        <PostsList Posts="latest" />
+        <a class="read-more" href="/blog">View all posts →</a>
+    </section>
+}
+
+@code {
+    List<Post<BlogFrontMatter>> latest = new();
+
+    protected override void OnInitialized()
+    {
+        latest = blazorStaticContentService.Posts
+            .OrderByDescending(p => p.FrontMatter.Published)
+            .Take(3)
+            .ToList();
+    }
+}

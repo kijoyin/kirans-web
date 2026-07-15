@@ -1,0 +1,37 @@
+@using System.Globalization
+@using BlazorStatic
+@using BlazorStatic.Services
+@inject BlazorStaticContentService<BlogFrontMatter> blazorStaticContentService
+@inject BlazorStaticService blazorStaticService
+
+<ul class="post-list">
+    @foreach (var post in posts.OrderByDescending(x => x.FrontMatter.Published))
+    {
+        <li class="post-item">
+            <article>
+                <DateRow Published="post.FrontMatter.Published" Updated="post.FrontMatter.Updated" />
+                <h2>
+                    <a href="@blazorStaticContentService.Options.PageUrl/@(post.Url)">@post.FrontMatter.Title</a>
+                </h2>
+                <TagsComponent Tags="post.FrontMatter.Tags" />
+                <p class="post-lead">@((MarkupString)post.FrontMatter.Lead)</p>
+                <a class="read-more" href="@blazorStaticContentService.Options.PageUrl/@(post.Url)">Read more →</a>
+            </article>
+        </li>
+    }
+</ul>
+
+
+@code {
+    List<Post<BlogFrontMatter>> posts = new();
+
+
+    [Parameter] public List<Post<BlogFrontMatter>>? Posts { get; set; }
+    protected override void OnInitialized()
+    {
+        posts = Posts != null ? Posts.OrderBy(x => x.FrontMatter.Published).ToList() : blazorStaticContentService.Posts;
+        base.OnInitialized();
+    }
+
+
+}
