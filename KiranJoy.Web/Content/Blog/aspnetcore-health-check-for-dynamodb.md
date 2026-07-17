@@ -52,6 +52,7 @@ If you run the application now you can see a bit more information that just the 
 
 Lets add a new class called “DynamoOptions.cs” for holding all the dynamo db configuration
 
+```csharp
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,29 +68,34 @@ namespace DynamoDBHealthCheck
         public string AuthenticationRegion { get; set; }
     }
 }
+```
+
 
 and add the following configuration section to the appsettings.json
 
+```json
 {
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft": "Warning",
-      "Microsoft.Hosting.Lifetime": "Information"
-    }
-  },
-  "dynamodb": {
-    "aWSAcessKey": "fakeKey",
-    "aWSSecretKey": "fakeSecret",
-    "connectionString": "http://localhost:8000",
-    "authenticationRegion": "localhost",
-    "tableName": "TestTable"
-  },
-  "AllowedHosts": "\*"
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft": "Warning",
+            "Microsoft.Hosting.Lifetime": "Information"
+        }
+    },
+    "dynamodb": {
+        "aWSAcessKey": "fakeKey",
+        "aWSSecretKey": "fakeSecret",
+        "connectionString": "http://localhost:8000",
+        "authenticationRegion": "localhost",
+        "tableName": "TestTable"
+    },
+    "AllowedHosts": "*"
 }
+```
 
 Lets now add a class “DynamoHealth.cs” that will implement the IHealthCheck interface from the ” Microsoft.Extensions.Diagnostics.HealthChecks” package.
 
+```csharp
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.Runtime;
@@ -104,21 +110,21 @@ namespace DynamoDBHealthCheck
 {
     public class DynamoHealth: IHealthCheck
     {
-        private readonly DynamoOptions \_options;
+        private readonly DynamoOptions _options;
         public DynamoHealth(DynamoOptions options)
         {
-            \_options = options ?? throw new ArgumentNullException(nameof(options));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
         }
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             try
             {
-                var credentials = new BasicAWSCredentials(\_options.AWSAcessKey, \_options.AWSSecretKey);
+                var credentials = new BasicAWSCredentials(_options.AWSAcessKey, _options.AWSSecretKey);
                 var config = new AmazonDynamoDBConfig();
-                config.AuthenticationRegion = \_options.AuthenticationRegion;
-                config.ServiceURL = \_options.ConnectionString;
+                config.AuthenticationRegion = _options.AuthenticationRegion;
+                config.ServiceURL = _options.ConnectionString;
                 var client = new AmazonDynamoDBClient(credentials, config);
-                await client.DescribeTableAsync(\_options.TableName,cancellationToken);
+                await client.DescribeTableAsync(_options.TableName,cancellationToken);
                 return HealthCheckResult.Healthy();
             }
             catch (Exception ex)
@@ -128,9 +134,10 @@ namespace DynamoDBHealthCheck
         }
     }
 }
-
+```
 Lets also add an extension methods that can be called on the services.AddHealthChecks() methods from the startup.cs.
 
+```csharp
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System;
@@ -152,9 +159,10 @@ namespace DynamoDBHealthCheck
         }
     }
 }
-
+```
 We now have to update the startup.cs to include the AddDynamoDb extension. If you run the application now you can see that the health check returns an unhealthy status for overall app and also DynamoDb as shown below.
 
+```csharp
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -205,9 +213,9 @@ namespace DynamoDBHealthCheck
                 {
                     ResultStatusCodes =
                     {
-                        \[HealthStatus.Healthy\] = StatusCodes.Status200OK,
-                        \[HealthStatus.Degraded\] = StatusCodes.Status200OK,
-                        \[HealthStatus.Unhealthy\] = StatusCodes.Status503ServiceUnavailable
+                        [HealthStatus.Healthy] = StatusCodes.Status200OK,
+                        [HealthStatus.Degraded] = StatusCodes.Status200OK,
+                        [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable
                     },
                     ResponseWriter = WriteResponse
                 });
@@ -228,44 +236,52 @@ namespace DynamoDBHealthCheck
                         new JProperty("status", pair.Value.Status.ToString()),
                         new JProperty("description", pair.Value.Description),
                         new JProperty("data", new JObject(pair.Value.Data.Select(
-                            p => new JProperty(p.Key, p.Value))))))))));
+                            p => new JProperty(p.Key, p.Value)))))))));
             return httpContext.Response.WriteAsync(
                 json.ToString(Formatting.Indented));
         }
     }
 }
+```
 
+```json
 {
-  "status": "Unhealthy",
-  "results": {
-    "dynamodb": {
-      "status": "Unhealthy",
-      "description": null,
-      "data": {
+    "status": "Unhealthy",
+    "results": {
+        "dynamodb": {
+            "status": "Unhealthy",
+            "description": null,
+            "data": {
         
-      }
+            }
+        }
     }
-  }
 }
+```
 
 Let’s now make sure a local dynamo db instance is running and we should also create a table called “TestTable” in this local instance. To check whether DyanamoDB’s health we are calling the DescribeTable method which throw an exception when the table is not found.
 
 Instructions on how to run DynamoDB locally can be found [here](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html). Once we have started the DynamoDB local server and created the “TestTable” health check will return a health status both for the overall system and also dynamodb.
 
-// https://localhost:44337/health
 
+```text
+// https://localhost:44337/health
+```
+
+```json
 {
-  "status": "Healthy",
-  "results": {
-    "dynamodb": {
-      "status": "Healthy",
-      "description": null,
-      "data": {
+    "status": "Healthy",
+    "results": {
+        "dynamodb": {
+            "status": "Healthy",
+            "description": null,
+            "data": {
         
-      }
+            }
+        }
     }
-  }
 }
+```
 
 ## Additional Information
 

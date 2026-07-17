@@ -56,11 +56,11 @@ public static class WebsiteKeys
 {
     // TODO: update these with your real handles/URLs.
     public const string SiteUrl = "https://kiranjoy.blog";
-    public const string GitHubRepo = "https://github.com/kiranjoy/kiranjoy";
-    public const string GitHub = "https://github.com/kiranjoy";
-    public const string LinkedIn = "https://www.linkedin.com/in/kiranjoy/";
+    public const string GitHubRepo = "https://github.com/kijoyin/kirans-web";
+    public const string GitHub = "https://github.com/kijoyin";
+    public const string LinkedIn = "https://www.linkedin.com/in/kjoy/";
     public const string X = "https://x.com/";
-    public const string Email = "hello@kiranjoy.blog";
+    public const string Email = "kijoyin@gmail.com";
 
     public const string Name = "Kiran Joy";
     public const string Title = "Kiran Joy";

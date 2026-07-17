@@ -9,19 +9,23 @@ authors:
 
 On [day 1](https://kiranjoy.blog/2024/07/02/how-to-build-a-high-availability-kubernetes-home-lab-with-microk8s-and-ubuntu-server-day-1/) we installed and configured a high availability Kubernetes cluster. Today we are going to enable the Kubernetes dashboard and expose it using a friendly name. Since we are using microk8s were going to use it to enable the dashboard and it is as simple as the below command
 
-microk8s enable dashboard
+<pre><code class="language-bash">microk8s enable dashboard
+</code></pre>
 
 Now that the dashboard is enabled, you can check the service by running the get service command.
 
- microk8s kubectl get service kubernetes-dashboard -n kube-system
-NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
-kubernetes-dashboard   ClusterIP   10.152.183.152   <none>        443/TCP   30d
+<pre><code class="language-bash">microk8s kubectl get service kubernetes-dashboard -n kube-system
+</code></pre>
+
+<pre><code class="language-text">NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+kubernetes-dashboard   ClusterIP   10.152.183.152   &lt;none&gt;        443/TCP   30d
+</code></pre>
 
 In our case there is no GUI on the kubernetes servers, so we need to be able to access it from any device on the network. For this we will be using the ingress controller we created to expose our demo application on day 1.
 
 Lets create a new kb-dash-ingress.yml file and copy the below yml.
 
-apiVersion: networking.k8s.io/v1
+<pre><code class="language-yaml">apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: kb-dashboard
@@ -41,16 +45,21 @@ spec:
               name: kubernetes-dashboard  # the name n to the service
               port:
                 number: 443  #port dashboard is running
+</code></pre>
 
 Lets apply it using the kubecly apply command.
 
-microk8s kubectl apply -f kb-dash-ingress.yml
+<pre><code class="language-bash">microk8s kubectl apply -f kb-dash-ingress.yml
+</code></pre>
 
 On line number 11, we added a friendly name and in my case i used kbdash.local. We have to tell our dns server to route kbdash.local to the IP address of our ingress load balancer.
 
-microk8s kubectl get svc -n ingress
-NAME      TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)                      AGE
+<pre><code class="language-bash">microk8s kubectl get svc -n ingress
+</code></pre>
+
+<pre><code class="language-text">NAME      TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)                      AGE
 ingress   LoadBalancer   10.152.183.105   192.168.1.200   80:31461/TCP,443:30680/TCP   31d
+</code></pre>
 
 Using the above command we can see that the ip of my ingress load balancer is 192.168.1.200. There are may ways to have this setup and in my case I chose AdGuard which I have used before. I ran my Adguard on a truenas scale server but you could also run them in your kubernetes server. I have also updated my router’s dns to point to Adguard.
 
@@ -60,7 +69,8 @@ Now if you open a browser and navigate to [https://kbdash.local](https://kbdash.
 
 You need a token to login and you can get one by running the following comand
 
-microk8s kubectl create token default
+<pre><code class="language-bash">microk8s kubectl create token default
+</code></pre>
 
 Copy the token and press Sign in.
 
