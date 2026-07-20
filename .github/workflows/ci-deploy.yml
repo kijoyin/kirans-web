@@ -1,0 +1,84 @@
+name: CI Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: kiranjoy-web
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.build.outputs.image }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Log in to GitHub Container Registry (ghcr.io)
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set image tags
+      id: vars
+      run: |
+        # default to ghcr.io and repository owner when secrets are not provided
+        REG_HOST=ghcr.io
+        REG_OWNER=${{ secrets.REGISTRY_OWNER }}
+        if [ -z "$REG_OWNER" ]; then REG_OWNER=${{ github.repository_owner }}; fi
+        echo "IMAGE_SHA=${REG_HOST}/${REG_OWNER}/${IMAGE_NAME}:${GITHUB_SHA}" >> $GITHUB_OUTPUT
+        echo "IMAGE_LATEST=${REG_HOST}/${REG_OWNER}/${IMAGE_NAME}:latest" >> $GITHUB_OUTPUT
+
+    - name: Build and push
+      id: build
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: tmp/kiranjoy/Dockerfile
+        push: true
+        tags: |
+          ${{ steps.vars.outputs.IMAGE_SHA }}
+          ${{ steps.vars.outputs.IMAGE_LATEST }}
+
+    - name: Set output image
+      run: echo "image=${{ steps.vars.outputs.IMAGE_SHA }}" >> $GITHUB_OUTPUT
+
+  update-homelab-repo:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: secrets.HOMELAB_REPO != '' && secrets.HOMELAB_REPO_PAT != ''
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Clone homelab repo
+      run: |
+        git clone https://x-access-token:${{ secrets.HOMELAB_REPO_PAT }}@github.com/${{ secrets.HOMELAB_REPO }} homelab
+
+    - name: Update deployment image
+      env:
+        NEW_IMAGE: ${{ needs.build-and-push.outputs.image }}
+      run: |
+        set -e
+        cd homelab
+        FILE_PATH="kiranjoy/deployment.yaml"
+        if [ -f "$FILE_PATH" ]; then
+          sed -i "s|image: .*|image: ${NEW_IMAGE}|" "$FILE_PATH"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$FILE_PATH"
+          git commit -m "chore: update kiranjoy image to ${NEW_IMAGE}"
+          git push origin HEAD:main
+        else
+          echo "File $FILE_PATH not found in homelab repo"
+          exit 1
+        fi
