@@ -14,16 +14,12 @@
         <p class="lead-block">@WebsiteKeys.BlogLead</p>
 
         <div class="search-wrap">
-            <link href="/pagefind/pagefind-ui.css" rel="stylesheet">
-            <script src="/pagefind/pagefind-ui.js"></script>
-            <div id="search"></div>
-            <script>
-                window.addEventListener('DOMContentLoaded', function () {
-                    if (window.PagefindUI) {
-                        new PagefindUI({ element: "#search", showSubResults: true, showImages: false });
-                    }
-                });
-            </script>
+            <link href="/pagefind/pagefind-component-ui.css" rel="stylesheet">
+            <script src="/pagefind/pagefind-component-ui.js" type="module"></script>
+            <pagefind-input instance="blog" placeholder="Search posts..."></pagefind-input>
+            <pagefind-summary instance="blog"></pagefind-summary>
+            <pagefind-results instance="blog"></pagefind-results>
+            <pagefind-config instance="blog"></pagefind-config>
         </div>
 
         <PostsList />
