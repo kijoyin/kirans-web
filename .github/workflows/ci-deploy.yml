@@ -16,7 +16,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     outputs:
-      image: ${{ steps.build.outputs.image }}
+      image: ${{ steps.vars.outputs.IMAGE_SHA }}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -48,9 +48,6 @@ jobs:
         tags: |
           ${{ steps.vars.outputs.IMAGE_SHA }}
           ${{ steps.vars.outputs.IMAGE_LATEST }}
-
-    - name: Set output image
-      run: echo "image=${{ steps.vars.outputs.IMAGE_SHA }}" >> $GITHUB_OUTPUT
 
   update-manifest:
     needs: build-and-push
