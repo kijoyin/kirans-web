@@ -55,17 +55,20 @@ jobs:
   update-homelab-repo:
     needs: build-and-push
     runs-on: ubuntu-latest
+    env:
+      HOMELAB_REPO: ${{ secrets.HOMELAB_REPO }}
+      HOMELAB_REPO_PAT: ${{ secrets.HOMELAB_REPO_PAT }}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
     - name: Clone homelab repo
-      if: ${{ secrets.HOMELAB_REPO != '' && secrets.HOMELAB_REPO_PAT != '' }}
+      if: ${{ env.HOMELAB_REPO != '' && env.HOMELAB_REPO_PAT != '' }}
       run: |
-        git clone https://x-access-token:${{ secrets.HOMELAB_REPO_PAT }}@github.com/${{ secrets.HOMELAB_REPO }} homelab
+        git clone https://x-access-token:${HOMELAB_REPO_PAT}@github.com/${HOMELAB_REPO} homelab
 
     - name: Update deployment image
-      if: ${{ secrets.HOMELAB_REPO != '' && secrets.HOMELAB_REPO_PAT != '' }}
+      if: ${{ env.HOMELAB_REPO != '' && env.HOMELAB_REPO_PAT != '' }}
       env:
         NEW_IMAGE: ${{ needs.build-and-push.outputs.image }}
       run: |
