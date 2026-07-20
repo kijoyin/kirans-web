@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
       - name: kiranjoy-web
-        # Replace this image with your registry/image:tag
-        image: YOUR_REGISTRY/kiranjoy-web:latest
+        # Updated automatically by CI (.github/workflows/ci-deploy.yml)
+        image: ghcr.io/kijoyin/kiranjoy-web:latest
         ports:
         - containerPort: 80
           name: http

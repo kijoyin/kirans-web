@@ -43,7 +43,7 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: .
-        file: tmp/kiranjoy/Dockerfile
+        file: deploy/Dockerfile
         push: true
         tags: |
           ${{ steps.vars.outputs.IMAGE_SHA }}
@@ -52,37 +52,33 @@ jobs:
     - name: Set output image
       run: echo "image=${{ steps.vars.outputs.IMAGE_SHA }}" >> $GITHUB_OUTPUT
 
-  update-homelab-repo:
+  update-manifest:
     needs: build-and-push
     runs-on: ubuntu-latest
-    env:
-      HOMELAB_REPO: ${{ secrets.HOMELAB_REPO }}
-      HOMELAB_REPO_PAT: ${{ secrets.HOMELAB_REPO_PAT }}
+    permissions:
+      contents: write
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Clone homelab repo
-      if: ${{ env.HOMELAB_REPO != '' && env.HOMELAB_REPO_PAT != '' }}
-      run: |
-        git clone https://x-access-token:${HOMELAB_REPO_PAT}@github.com/${HOMELAB_REPO} homelab
-
     - name: Update deployment image
-      if: ${{ env.HOMELAB_REPO != '' && env.HOMELAB_REPO_PAT != '' }}
       env:
         NEW_IMAGE: ${{ needs.build-and-push.outputs.image }}
       run: |
         set -e
-        cd homelab
-        FILE_PATH="kiranjoy/deployment.yaml"
+        FILE_PATH="deploy/k8s/deployment.yaml"
         if [ -f "$FILE_PATH" ]; then
           sed -i "s|image: .*|image: ${NEW_IMAGE}|" "$FILE_PATH"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add "$FILE_PATH"
-          git commit -m "chore: update kiranjoy image to ${NEW_IMAGE}"
-          git push origin HEAD:main
+          if git diff --cached --quiet; then
+            echo "No image change to commit"
+          else
+            git commit -m "chore: update kiranjoy image to ${NEW_IMAGE}"
+            git push origin HEAD:main
+          fi
         else
-          echo "File $FILE_PATH not found in homelab repo"
+          echo "File $FILE_PATH not found"
           exit 1
         fi

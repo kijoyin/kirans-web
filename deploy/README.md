@@ -8,13 +8,13 @@ Steps to use:
 
 ```bash
 # from repo root (c:\repos\kiranjoy)
-docker build -f tmp/kiranjoy/Dockerfile -t YOUR_REGISTRY/kiranjoy-web:latest .
+docker build -f deploy/Dockerfile -t YOUR_REGISTRY/kiranjoy-web:latest .
 docker push YOUR_REGISTRY/kiranjoy-web:latest
 ```
 
-2. Update `deployment.yaml` and replace `YOUR_REGISTRY/kiranjoy-web:latest` with the built image.
+2. Update `deploy/k8s/deployment.yaml` and replace `YOUR_REGISTRY/kiranjoy-web:latest` with the built image.
 
-3. Copy the `kiranjoy` folder into your `homelabv3` repository (for example `homelabv3/kiranjoy`) and commit.
+3. Commit the `deploy/` folder in this repository.
 
 4. Create the namespace in the cluster (once):
 
@@ -22,7 +22,7 @@ docker push YOUR_REGISTRY/kiranjoy-web:latest
 kubectl create namespace kiranjoy-prod || true
 ```
 
-5. From Argo CD UI create an Application that points to `homelabv3` repo and path `kiranjoy` (or apply `argocd-application.yaml` into the `argocd` namespace).
+5. From Argo CD UI create an Application that points to this repo and path `deploy/k8s` (or apply `deploy/argocd-application.yaml` into the `argocd` namespace).
 
 6. Ensure your DNS/hosts points `kiranjoy.local` to your ingress loadbalancer IP, or update `ingress.yaml` host to match your environment.
 

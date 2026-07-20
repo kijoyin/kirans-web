@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: "https://github.com/kijoyin/homelabv3"
+    repoURL: "https://github.com/kijoyin/kirans-web"
     targetRevision: main
-    path: kiranjoy
+    path: deploy/k8s
   destination:
     server: https://kubernetes.default.svc
     namespace: kiranjoy-prod
