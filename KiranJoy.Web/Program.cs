@@ -67,4 +67,8 @@ public static class WebsiteKeys
     public const string Tagline = "Integration Architect &amp; Engineering Manager — .NET, Azure &amp; AI";
     public const string BlogPostStorageAddress = $"{GitHubRepo}/tree/main/KiranJoy.Web/Content/Blog";
     public const string BlogLead = "Field notes on .NET, cloud integration, Kubernetes, home labs and applied AI.";
+
+    // Umami analytics (self-hosted).
+    public const string UmamiUrl = "https://analytics.objectoverflow.com";
+    public const string UmamiWebsiteId = "7b272d1f-c332-42e4-8231-0aff5b3b9311";
 }

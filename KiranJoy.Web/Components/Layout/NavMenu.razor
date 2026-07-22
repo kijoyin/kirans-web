@@ -14,7 +14,7 @@
                          Match="@(item.Link == "/" ? NavLinkMatch.All : NavLinkMatch.Prefix)"
                          href="@item.Link">@item.Name</NavLink>
             }
-            <a class="nav-link" target="_blank" rel="noopener noreferrer" href="@WebsiteKeys.GitHub">GitHub ↗</a>
+            <a class="nav-link" target="_blank" rel="noopener noreferrer" href="@WebsiteKeys.GitHub" data-umami-event="github" data-umami-event-location="nav">GitHub ↗</a>
         </div>
 
         <div class="nav-actions" style="display:flex; gap:0.5rem; align-items:center;">
