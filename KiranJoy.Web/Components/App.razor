@@ -31,8 +31,8 @@
 
     <HeadOutlet/>
 
-    <!-- Umami analytics -->
-    <script defer src="@($"{WebsiteKeys.UmamiUrl}/script.js")" data-website-id="@WebsiteKeys.UmamiWebsiteId"></script>
+    <!-- Umami analytics (proxied via /stats) -->
+    <script defer src="/stats/script.js" data-website-id="@WebsiteKeys.UmamiWebsiteId" data-host-url="/stats"></script>
 </head>
 
 <body>
