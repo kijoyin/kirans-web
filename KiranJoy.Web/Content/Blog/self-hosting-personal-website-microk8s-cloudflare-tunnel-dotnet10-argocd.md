@@ -253,10 +253,18 @@ authors:
 ...
 ```
 
-**Why not Hugo/Astro/Next.js?**
-- I'm a .NET engineer. The CMS *is* my IDE (VS IntelliSense on front matter, refactoring across posts, type-safe components).
-- Blazor components for interactive islands (search, theme toggle) without JS framework overhead.
+**Why not Next.js? Or a full CMS (Ghost, WordPress, Umbraco)?**
+
+Honestly: I wanted to *experiment* with running a pure static site in production — to see if the claimed performance gains and operational simplicity actually materialize, and to learn the pattern by living with it.
+
+The .NET/BlazorStatic choice was secondary:
+- I'm a .NET engineer — and I am  using my IDE as my CMS (VS Code in this case).
+- Blazor components for interactive islands (search, theme toggle) without a JS framework. As a C# developer it is the easiest choice for me.
 - Single language, single toolchain, single CI pipeline.
+
+**The experiment hypothesis**: *"A static site on nginx behind Cloudflare Tunnel will be faster, cheaper, and simpler to operate than any dynamic alternative — and I'll learn the pattern by running it."*
+
+**Verdict so far**: True. Sub-50ms TTFB globally (Cloudflare edge cache), zero patching, zero database, zero runtime exploits. The "build once, serve everywhere" model holds up.
 
 **Output**: Pure static files in `KiranJoy.Web/output/` — HTML, CSS, JS, WebAssembly (only for interactive components), images. No server, no database, no runtime.
 
