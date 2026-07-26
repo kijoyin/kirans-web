@@ -1,6 +1,6 @@
 ---
 title: "How I Self-Host My Personal Website on a MicroK8s Home Lab with Cloudflare Tunnel, .NET 10, and ArgoCD"
-lead: "A practical walkthrough of the stack behind kiran-joy.com — 3-node HA MicroK8s cluster, Cloudflare Tunnel for zero-trust ingress, .NET 10 static site generation with BlazorStatic, multi-stage Docker build with Pagefind search, and GitOps via ArgoCD."
+lead: "A practical walkthrough of the stack behind your-domain.com — 3-node HA MicroK8s cluster, Cloudflare Tunnel for zero-trust ingress, .NET 10 static site generation with BlazorStatic, multi-stage Docker build with Pagefind search, and GitOps via ArgoCD."
 published: 2025-07-26
 tags: [home-lab, kubernetes, microk8s, cloudflare-tunnel, dotnet, blazor, argocd, gitops, self-hosting]
 authors:
@@ -38,7 +38,7 @@ authors:
 │                        CLOUDFLARE TUNNEL                                    │
 │  ┌─────────────┐    ┌──────────────────┐    ┌────────────────────────────┐  │
 │  │  DNS:       │    │  cloudflared     │    │  No open ports on router   │  │
-│  │  kiran-joy.com ────►  (daemonset)   ────►  No public IP needed        │  │
+│  │  your-domain.com ────►  (daemonset)   ────►  No public IP needed        │  │
 │  │  www        │    │  outbound only   │    │  DDoS/WAF included free    │  │
 │  └─────────────┘    └──────────────────┘    └────────────────────────────┘  │
 └─────────────────────────────┬───────────────────────────────────────────────┘
@@ -57,12 +57,12 @@ authors:
 │  │                        INGRESS-NGINX (DaemonSet)                     │   │
 │  │  • TLS termination (Cloudflare certs)                                │   │
 │  │  • Rate limiting, caching headers                                    │   │
-│  │  • Routes → kiranjoy-web Service                                     │   │
+│  │  • Routes → my-web-app Service                                       │   │
 │  └──────────────────────────────┬───────────────────────────────────────┘   │
 │                                 │                                           │
 │                                 ▼                                           │
 │  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │                     kiranjoy-web Deployment                          │   │
+│  │                     my-web-app Deployment                            │   │
 │  │  • 2 replicas (anti-affinity across nodes)                           │   │
 │  │  • nginx:alpine serving static files                                 │   │
 │  │  • Pagefind search index in /pagefind                                │   │
@@ -228,8 +228,8 @@ app.UseBlazorStaticGenerator(shutdownApp: !app.Environment.IsDevelopment());
 app.Run();
 
 public static class WebsiteKeys {
-    public const string SiteUrl = "https://kiran-joy.com";
-    public const string GitHubRepo = "https://github.com/kijoyin/kirans-web";
+    public const string SiteUrl = "https://your-domain.com";
+    public const string GitHubRepo = "https://github.com/<your-github-user>/<your-repo>";
     // ... social links, Umami config, etc.
 }
 ```
@@ -266,7 +266,7 @@ The .NET/BlazorStatic choice was secondary:
 
 **Verdict so far**: True. Sub-50ms TTFB globally (Cloudflare edge cache), zero patching, zero database, zero runtime exploits. The "build once, serve everywhere" model holds up.
 
-**Output**: Pure static files in `KiranJoy.Web/output/` — HTML, CSS, JS, WebAssembly (only for interactive components), images. No server, no database, no runtime.
+**Output**: Pure static files in `MyWebApp.Web/output/` — HTML, CSS, JS, WebAssembly (only for interactive components), images. No server, no database, no runtime.
 
 ---
 
@@ -283,17 +283,17 @@ COPY . ./
 
 # Remove launchSettings.json to force Production env
 # (BlazorStaticGenerator only runs in non-Development)
-RUN rm -f KiranJoy.Web/Properties/launchSettings.json
+RUN rm -f MyWebApp.Web/Properties/launchSettings.json
 
-# Generate static site into KiranJoy.Web/output
+# Generate static site into MyWebApp.Web/output
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV ASPNETCORE_URLS=http://127.0.0.1:5000
-RUN dotnet run --project KiranJoy.Web/KiranJoy.Web.csproj --configuration Release --no-launch-profile
+RUN dotnet run --project MyWebApp.Web/MyWebApp.Web.csproj --configuration Release --no-launch-profile
 
 # STAGE 2: Build Pagefind search index
 FROM node:20-alpine AS search
 WORKDIR /site
-COPY --from=build /src/KiranJoy.Web/output ./
+COPY --from=build /src/MyWebApp.Web/output ./
 # Pagefind: zero-config, client-side search, ~100KB JS
 RUN npx -y pagefind --site . --glob "**/*.html"
 
@@ -373,7 +373,7 @@ permissions:
   packages: write
 
 env:
-  IMAGE_NAME: kiranjoy-web
+  IMAGE_NAME: my-web-app
   REGISTRY: ghcr.io
 
 jobs:
@@ -420,17 +420,17 @@ jobs:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kiranjoy-web
+  name: my-web-app
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: "https://github.com/kijoyin/kirans-web"
+    repoURL: "https://github.com/<your-github-user>/<your-repo>"
     targetRevision: main
     path: deploy/k8s
   destination:
     server: https://kubernetes.default.svc
-    namespace: kiranjoy-prod
+    namespace: my-app-prod
   syncPolicy:
     automated:
       prune: true
@@ -446,19 +446,19 @@ spec:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: kiranjoy-prod
+  name: my-app-prod
 ---
 # deploy/k8s/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kiranjoy-web
-  namespace: kiranjoy-prod
+  name: my-web-app
+  namespace: my-app-prod
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: kiranjoy-web
+      app: my-web-app
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -467,7 +467,7 @@ spec:
   template:
     metadata:
       labels:
-        app: kiranjoy-web
+        app: my-web-app
       annotations:
         # Forces rollout on image tag change
         argocd.argoproj.io/sync-wave: "10"
@@ -481,11 +481,11 @@ spec:
                 matchExpressions:
                 - key: app
                   operator: In
-                  values: [kiranjoy-web]
+                  values: [my-web-app]
               topologyKey: kubernetes.io/hostname
       containers:
-      - name: kiranjoy-web
-        image: ghcr.io/kijoyin/kiranjoy-web:latest
+      - name: my-web-app
+        image: ghcr.io/<your-github-user>/my-web-app:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 80
@@ -513,11 +513,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: kiranjoy-web
-  namespace: kiranjoy-prod
+  name: my-web-app
+  namespace: my-app-prod
 spec:
   selector:
-    app: kiranjoy-web
+    app: my-web-app
   ports:
   - port: 80
     targetPort: 80
@@ -526,8 +526,8 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: kiranjoy-web
-  namespace: kiranjoy-prod
+  name: my-web-app
+  namespace: my-app-prod
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
@@ -536,28 +536,28 @@ spec:
   ingressClassName: public
   tls:
   - hosts:
-    - kiran-joy.com
-    - www.kiran-joy.com
-    secretName: kiranjoy-tls
+    - your-domain.com
+    - www.your-domain.com
+    secretName: my-web-app-tls
   rules:
-  - host: kiran-joy.com
+  - host: your-domain.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: kiranjoy-web
+            name: my-web-app
             port:
               number: 80
-  - host: www.kiran-joy.com
+  - host: www.your-domain.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: kiranjoy-web
+            name: my-web-app
             port:
               number: 80
 ```
@@ -567,7 +567,7 @@ spec:
 git push origin main
     │
     ▼
-GitHub Actions: build multi-arch image → push to ghcr.io/kijoyin/kiranjoy-web:<sha> + :latest
+GitHub Actions: build multi-arch image → push to ghcr.io/<your-org>/<your-image>:<sha> + :latest
     │
     ▼
 ArgoCD (polling every 3 min): detects new image tag in deployment.yaml
@@ -579,7 +579,7 @@ ArgoCD: rolling update (2 replicas, maxSurge=1, maxUnavailable=0)
 Health checks pass → traffic shifts → old pods terminate
     │
     ▼
-Site updated. Zero downtime. Rollback = `argocd app rollback kiranjoy-web <revision>`
+Site updated. Zero downtime. Rollback = `argocd app rollback <app-name> <revision>`
 ```
 
 ---
@@ -630,17 +630,21 @@ spec:
 
 ---
 
-## 7. What I Learned (The "Deliberate Practice" Bits)
+## 7. What I'm Learning (Ongoing)
 
-| Lesson | Context |
-|--------|---------|
-| **Cloudflare Tunnel > MetalLB for home labs** | Zero port forwarding, works behind CGNAT, free DDoS/WAF. The 50ms latency is noise for content sites. |
-| **Multi-arch builds matter** | My cluster is amd64, but I test locally on Apple Silicon. `docker buildx` + `--platform linux/amd64,linux/arm64` catches arch bugs early. |
-| **BlazorStatic + Pagefind = search without a server** | Client-side search index built at deploy time. Zero runtime dependency. Works on static hosting anywhere. |
-| **ArgoCD `automated.prune` + `selfHeal` = sleep better** | Drift detection + auto-remediation. If I manually `kubectl edit` something, ArgoCD reverts it. Git stays source of truth. |
-| **Health endpoints are non-negotiable** | `/healthz` (liveness) + `/ready` (readiness) = Kubernetes can route traffic safely during rollouts. BlazorStatic generates these automatically. |
-| **Resource requests/limits prevent noisy neighbors** | 50m CPU / 64Mi request, 200m / 128Mi limit. The site runs fine; the cluster stays schedulable. |
-| **Anti-affinity = real HA** | `podAntiAffinity` with `topologyKey: kubernetes.io/hostname` spreads replicas across nodes. One node dies → zero downtime. |
+This site has only been live a few days. The real lessons come from operating it over time — debugging the first 3 AM alert, watching how the cluster handles a power outage, seeing what breaks when I upgrade MicroK8s. I'll update this section as those scars accumulate.
+
+For now, the hypotheses I'm testing:
+
+| Hypothesis | How I'll Know |
+|------------|---------------|
+| Cloudflare Tunnel is simpler than MetalLB + public IP for home labs | No port forwards to manage, CGNAT-proof, free WAF |
+| Static site + nginx + Cloudflare edge = "fast enough" globally | Sub-100ms TTFB from most regions, zero origin load for cached pages |
+| ArgoCD `selfHeal` keeps Git as source of truth without babysitting | Drift gets reverted automatically; I only intervene for intentional changes |
+| BlazorStatic + Pagefind gives me search without a search service | Search works offline in dev, zero runtime cost in prod |
+| Running prod-grade K8s at home builds intuition that transfers to work | Next time I design a platform at work, I've felt the pain of the decisions |
+
+The point isn't that this architecture is perfect. It's that **I'm running it, observing it, and iterating** — the same loop that makes you better at your day job.
 
 ---
 
@@ -653,7 +657,7 @@ spec:
 | Cloudflare Tunnel + DNS + CDN + WAF | **Free** |
 | GitHub Actions (public repo) | **Free** |
 | GHCR storage (multi-arch images) | **Free** (public) |
-| Domain (kiran-joy.com) | ~$1/mo |
+| Domain (your-domain.com) | ~$1/mo |
 | **Total** | **~$12/mo** |
 
 Compare: Vercel Pro ($20), Netlify Pro ($19), AWS Amplify (~$15+), DigitalOcean App Platform ($12+). And I don't get Kubernetes, GitOps, or the operational reps.
@@ -664,7 +668,7 @@ Compare: Vercel Pro ($20), Netlify Pro ($19), AWS Amplify (~$15+), DigitalOcean 
 
 > **This is not about hosting a blog. It's about keeping my engineering hands dirty.**
 
-At work, I design systems, review architecture, mentor teams. I don't `kubectl apply` daily. If I only read docs and approve PRs, my judgment atrophies.
+At work, I design systems, review architecture, mentor teams. I don't `kubectl apply` daily. If I only read docs and approve PRs, I lose my edge.
 
 This home lab is my **spike environment** (in the book sense):
 - **Hypothesis**: "Can I run HA Kubernetes at home with Cloudflare Tunnel?"
@@ -685,8 +689,8 @@ This home lab is my **spike environment** (in the book sense):
 
 ## 10. Repo & Resources
 
-- **Source**: https://github.com/kijoyin/kirans-web
-- **Live**: https://kiran-joy.com
+- **Source**: https://github.com/<your-github-user>/<your-repo>
+- **Live**: https://your-domain.com
 - **Day 1 (Cluster)**: [How to Build a HA Kubernetes Home Lab with MicroK8s](/blog/how-to-build-a-high-availability-kubernetes-home-lab-with-microk8s-and-ubuntu-server-day-1)
 - **Day 2 (Dashboard)**: [Enable & Expose K8s Dashboard with MicroK8s](/blog/how-to-enable-and-expose-kubernetes-dashboard-using-microk8s-in-your-home-lab-day-2)
 
