@@ -586,6 +586,8 @@ Site updated. Zero downtime. Rollback = `argocd app rollback <app-name> <revisio
 
 ## 6. Observability: Umami Analytics (Self-Hosted)
 
+While Umami is self hosted, the admin interface is not exposed publicly.
+
 ```yaml
 # deploy/k8s/umami-deployment.yaml (simplified)
 apiVersion: apps/v1
