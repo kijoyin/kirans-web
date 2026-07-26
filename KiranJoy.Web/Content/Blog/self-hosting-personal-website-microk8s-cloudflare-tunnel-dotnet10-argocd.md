@@ -38,7 +38,7 @@ authors:
 │                        CLOUDFLARE TUNNEL                                    │
 │  ┌─────────────┐    ┌──────────────────┐    ┌────────────────────────────┐  │
 │  │  DNS:       │    │  cloudflared     │    │  No open ports on router   │  │
-│  │  your-domain.com ────►  (daemonset)   ────►  No public IP needed        │  │
+│  │  domain.com ────►  (daemonset)   ────►      No public IP needed       │  │
 │  │  www        │    │  outbound only   │    │  DDoS/WAF included free    │  │
 │  └─────────────┘    └──────────────────┘    └────────────────────────────┘  │
 └─────────────────────────────┬───────────────────────────────────────────────┘
