@@ -634,7 +634,7 @@ spec:
 
 ## 7. What I'm Learning (Ongoing)
 
-This site has only been live a few days. The real lessons come from operating it over time — watching how the cluster handles a power outage (oh it will go down since I have no battery back up but good to how it will recover after that), seeing what breaks when I upgrade MicroK8s. I'll update this section as those scars accumulate.
+This site has only been live a few days. The real lessons come from operating it over time — watching how the cluster handles a power outage (oh it will go down since I have no battery back up but good to see how it will recover after that ), seeing what breaks when I upgrade MicroK8s. I'll update this section as those scars accumulate.
 
 
 The point isn't that this architecture is perfect. It's that **I'm running it, observing it, and iterating** — the same loop that makes you better at your day job.
