@@ -632,17 +632,8 @@ spec:
 
 ## 7. What I'm Learning (Ongoing)
 
-This site has only been live a few days. The real lessons come from operating it over time — debugging the first 3 AM alert, watching how the cluster handles a power outage, seeing what breaks when I upgrade MicroK8s. I'll update this section as those scars accumulate.
+This site has only been live a few days. The real lessons come from operating it over time — watching how the cluster handles a power outage (oh it will go down since I have no battery back up but good to how it will recover after that), seeing what breaks when I upgrade MicroK8s. I'll update this section as those scars accumulate.
 
-For now, the hypotheses I'm testing:
-
-| Hypothesis | How I'll Know |
-|------------|---------------|
-| Cloudflare Tunnel is simpler than MetalLB + public IP for home labs | No port forwards to manage, CGNAT-proof, free WAF |
-| Static site + nginx + Cloudflare edge = "fast enough" globally | Sub-100ms TTFB from most regions, zero origin load for cached pages |
-| ArgoCD `selfHeal` keeps Git as source of truth without babysitting | Drift gets reverted automatically; I only intervene for intentional changes |
-| BlazorStatic + Pagefind gives me search without a search service | Search works offline in dev, zero runtime cost in prod |
-| Running prod-grade K8s at home builds intuition that transfers to work | Next time I design a platform at work, I've felt the pain of the decisions |
 
 The point isn't that this architecture is perfect. It's that **I'm running it, observing it, and iterating** — the same loop that makes you better at your day job.
 
@@ -666,7 +657,7 @@ Compare: Vercel Pro ($20), Netlify Pro ($19), AWS Amplify (~$15+), DigitalOcean 
 
 ## 9. The "Why Bother?" Answer
 
-> **This is not about hosting a blog. It's about keeping my engineering hands dirty.**
+> **This is not about hosting a blog. It's about self hosting, experimenting, failing and doing it all over again.**
 
 At work, I design systems, review architecture, mentor teams. I don't `kubectl apply` daily. If I only read docs and approve PRs, I lose my edge.
 
@@ -683,14 +674,12 @@ This home lab is my **spike environment** (in the book sense):
 - Anti-affinity + resource requests (operational maturity)
 - Umami over GA (data sovereignty)
 
-**AI writes syntax. You write architecture. The gap is where the value lives.**
+**AI writes syntax. You design, direct, supervise, and reivew. The gap is where the value lives.**
 
 ---
 
 ## 10. Repo & Resources
 
-- **Source**: https://github.com/<your-github-user>/<your-repo>
-- **Live**: https://your-domain.com
 - **Day 1 (Cluster)**: [How to Build a HA Kubernetes Home Lab with MicroK8s](/blog/how-to-build-a-high-availability-kubernetes-home-lab-with-microk8s-and-ubuntu-server-day-1)
 - **Day 2 (Dashboard)**: [Enable & Expose K8s Dashboard with MicroK8s](/blog/how-to-enable-and-expose-kubernetes-dashboard-using-microk8s-in-your-home-lab-day-2)
 
@@ -706,9 +695,6 @@ This home lab is my **spike environment** (in the book sense):
 
 - [ ] **cert-manager + Let's Encrypt** for internal TLS (currently Cloudflare terminates)
 - [ ] **Loki + Promtail** for log aggregation (replacing `kubectl logs`)
-- [ ] **Renovate bot** for automated dependency updates + ArgoCD sync
-- [ ] **Home Assistant integration** → expose sensors via K8s ingress
-- [ ] **Tailscale subnet router** for secure admin access without Cloudflare
 
 ---
 
