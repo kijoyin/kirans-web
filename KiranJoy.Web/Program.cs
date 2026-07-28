@@ -71,4 +71,10 @@ public static class WebsiteKeys
     // Umami analytics (self-hosted).
     public const string UmamiUrl = "https://analytics.objectoverflow.com";
     public const string UmamiWebsiteId = "7b272d1f-c332-42e4-8231-0aff5b3b9311";
+
+    // Cusdis comments (self-hosted). Only the public widget assets and open API are
+    // proxied first-party under /comments (see deploy/nginx.conf); the Cusdis
+    // dashboard stays internal. A relative host keeps requests same-origin.
+    public const string CusdisHost = "/comments";
+    public const string CusdisAppId = "3d8a7ebe-20aa-4b5e-b892-36b8b0fc2d92";
 }
