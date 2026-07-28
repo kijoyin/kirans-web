@@ -57,6 +57,9 @@
     <loc>https://kiranjoy.blog/blog/net-core-web-development-using-blazor-on-server-and-c</loc>
   </url>
   <url>
+    <loc>https://kiranjoy.blog/blog/self-hosting-personal-website-microk8s-cloudflare-tunnel-dotnet10-argocd</loc>
+  </url>
+  <url>
     <loc>https://kiranjoy.blog/blog/windows-developer-machine-build</loc>
   </url>
   <url>
@@ -181,6 +184,18 @@
   </url>
   <url>
     <loc>https://kiranjoy.blog/tags/swashbuckle</loc>
+  </url>
+  <url>
+    <loc>https://kiranjoy.blog/tags/cloudflare-tunnel</loc>
+  </url>
+  <url>
+    <loc>https://kiranjoy.blog/tags/argocd</loc>
+  </url>
+  <url>
+    <loc>https://kiranjoy.blog/tags/gitops</loc>
+  </url>
+  <url>
+    <loc>https://kiranjoy.blog/tags/self-hosting</loc>
   </url>
   <url>
     <loc>https://kiranjoy.blog/tags/windows-pc</loc>
