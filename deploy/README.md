@@ -29,3 +29,9 @@ kubectl create namespace kiranjoy-prod || true
 Notes:
 - The manifests use `traefik` as ingress class to match your existing apps; change if you use another ingress controller.
 - If you use a local registry (microk8s, kind), push image there and update the image name accordingly.
+- `nginx.conf` first-party proxies the public parts of self-hosted **Cusdis** comments
+  under `/comments` (widget assets at `/comments/js/` and the open API at
+  `/comments/api/open/`). Only these public paths are exposed — the Cusdis dashboard and
+  authenticated APIs stay internal. Update the upstream
+  `cusdis.cusdis-prod.svc.cluster.local:3000` in `nginx.conf` to match your Cusdis
+  Service name/namespace/port, and set `WebsiteKeys.CusdisAppId` to your project's App ID.

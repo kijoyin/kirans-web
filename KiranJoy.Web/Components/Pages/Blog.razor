@@ -49,6 +49,17 @@
            href="@($"{WebsiteKeys.BlogPostStorageAddress}/{FileName}.md")">View source on GitHub</a>
     </div>
 
+    <section class="comments" data-pagefind-ignore>
+        <h2 class="comments-title">Comments</h2>
+        <div id="cusdis_thread"
+             data-host="@WebsiteKeys.CusdisHost"
+             data-app-id="@WebsiteKeys.CusdisAppId"
+             data-page-id="@FileName"
+             data-page-url="@($"{WebsiteKeys.SiteUrl}/blog/{FileName}")"
+             data-page-title="@post.FrontMatter.Title"></div>
+        <script async defer src="@($"{WebsiteKeys.CusdisHost}/js/cusdis.es.js")"></script>
+    </section>
+
     <a class="back-link" href="/blog">← Back to all posts</a>
 </article>
 
