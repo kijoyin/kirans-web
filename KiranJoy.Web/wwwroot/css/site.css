@@ -676,6 +676,13 @@ img {
     min-height: 4rem;
 }
 
+.comments #cusdis_thread iframe {
+    width: 100%;
+    min-height: 40rem;
+    height: auto;
+    border: 0;
+}
+
 /* ---- Search (Pagefind) --------------------------------------------------- */
 .search-wrap {
     margin: 1.5rem 0 0.5rem;

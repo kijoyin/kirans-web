@@ -39,6 +39,8 @@
                 var next = current === 'dark' ? 'light' : 'dark';
                 document.documentElement.setAttribute('data-theme', next);
                 try { localStorage.setItem('theme', next); } catch (e) { }
+                // Keep the Cusdis comments widget in sync with the site theme.
+                try { if (window.CUSDIS) { window.CUSDIS.setTheme(next); } } catch (e) { }
             });
         }
         // Mobile menu

@@ -57,6 +57,16 @@
              data-page-id="@FileName"
              data-page-url="@($"{WebsiteKeys.SiteUrl}/blog/{FileName}")"
              data-page-title="@post.FrontMatter.Title"></div>
+        <script>
+            // Match the Cusdis widget theme to the site's current theme before it loads.
+            (function () {
+                var thread = document.getElementById('cusdis_thread');
+                if (thread) {
+                    var theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+                    thread.setAttribute('data-theme', theme);
+                }
+            })();
+        </script>
         <script async defer src="@($"{WebsiteKeys.CusdisHost}/js/cusdis.es.js")"></script>
     </section>
 
