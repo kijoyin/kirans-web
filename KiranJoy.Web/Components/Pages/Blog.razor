@@ -65,6 +65,15 @@
                     var theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
                     thread.setAttribute('data-theme', theme);
                 }
+                // Resize the Cusdis iframe to fit its content so it never shows an
+                // inner scroll bar, even if the widget's own auto-resize misfires.
+                window.addEventListener('message', function (e) {
+                    var d = e.data;
+                    if (d && d.from === 'cusdis' && d.event === 'resize') {
+                        var frame = document.querySelector('#cusdis_thread iframe');
+                        if (frame && d.data) { frame.style.height = parseInt(d.data, 10) + 'px'; }
+                    }
+                });
             })();
         </script>
         <script async defer src="@($"{WebsiteKeys.CusdisHost}/js/cusdis.es.js")"></script>

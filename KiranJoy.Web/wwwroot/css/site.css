@@ -678,9 +678,9 @@ img {
 
 .comments #cusdis_thread iframe {
     width: 100%;
-    min-height: 40rem;
-    height: auto;
+    min-height: 22rem;
     border: 0;
+    overflow: hidden;
 }
 
 /* ---- Search (Pagefind) --------------------------------------------------- */
