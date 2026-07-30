@@ -18,7 +18,7 @@ spec:
       containers:
       - name: kiranjoy-web
         # Updated automatically by CI (.github/workflows/ci-deploy.yml)
-        image: ghcr.io/kijoyin/kiranjoy-web:5ae378564cc64efa139e4835932dfe483d3f2e16
+        image: ghcr.io/kijoyin/kiranjoy-web:cad8fce57f7d7711ebed2308fd7c8c2ae9677c82
         ports:
         - containerPort: 80
           name: http
